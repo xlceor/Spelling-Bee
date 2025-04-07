@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import { motion, Variants } from 'framer-motion'; // Importamos framer-motion
 import categoriesData from '@/app/categories.json';
 
