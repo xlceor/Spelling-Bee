@@ -1,103 +1,219 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect, useMemo } from 'react';
+import { motion, Variants } from 'framer-motion'; // Importamos framer-motion
+import categoriesData from '@/app/categories.json';
+
+const letterPronunciation: Record<string, string> = {
+  a: 'ei', b: 'bi', c: 'si', d: 'di', e: 'i',
+  f: 'ef', g: 'yi', h: 'eich', i: 'ai', j: 'yei',
+  k: 'kei', l: 'el', m: 'em', n: 'en', o: 'ou',
+  p: 'pi', q: 'kiu', r: 'ar', s: 'es', t: 'ti',
+  u: 'iu', v: 'vi', w: 'double u', x: 'ex', y: 'wai',
+  z: 'zi'
+};
+const speak = (text: string) => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";  // Aseguramos que siempre use inglés
+  utterance.rate = 0.9;
+  speechSynthesis.speak(utterance);
+};
+
+const syllableMap: Record<string, string> = {
+  together: "t-o_g-e_t_h-e_r"
+};
+
+const getThemeClasses = (isDarkMode: boolean) => {
+  return isDarkMode 
+    ? 'bg-[#1e293b] text-white border-[#475569]' 
+    : 'bg-gray-50 text-gray-900';
+};
+
+const syllableBreakdown = (word: string) => {
+  return word.split('').join('-'); // Esto es un ejemplo simple
+};
+
+interface LetterCardProps {
+  letter: string;
+  isDarkMode: boolean; 
+}
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  word: string;
+}
+
+function LetterCard({ letter, isDarkMode }: LetterCardProps) {
+  const pronunciation = letterPronunciation[letter.toLowerCase()] || letter;
+  return (
+    <button
+      onClick={() => speak(letter)}
+      className={`flex flex-col items-center border border-yellow-400 ${isDarkMode ? "bg-gray-800 text-yellow-100" : "bg-gray-100 text-yellow-400"}  rounded-lg p-3 m-1 transition-transform hover:scale-110 shadow-md hover:bg-gray-700`}
+    >
+      <span className="text-xl font-bold">{letter}</span>
+      <span className="text-sm text-gray-800">{pronunciation}</span>
+    </button>
+  );
+}
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  word: string;
+  isDarkMode: boolean;  // Agrega esta prop
+}
+
+const Modal = ({ isOpen, onClose, word, isDarkMode }: ModalProps) => {
+  if (!isOpen) return null;
+
+  const lower = word.toLowerCase();
+  const breakdownStr = syllableMap[lower] ?? syllableBreakdown(lower);
+  const groups = breakdownStr.split('_').map(g => g.split('-'));
+
+  return (
+    <motion.div 
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm ${getThemeClasses(isDarkMode)}`}
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div
+        className={` rounded-2xl p-8 text-black max-w-md w-full shadow-xl border ${isDarkMode ? "bg-gray-800" : "bg-gray-100"} ring-1 ring-yellow-300/30 backdrop-blur-md`}
+        onClick={(e) => e.stopPropagation()}
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="flex justify-end">
+          <button
+            className="text-yellow-300 hover:text-yellow-500 text-3xl transition-transform hover:scale-125"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <h2 className="text-center text-4xl font-bold mb-8 text-yellow-400 drop-shadow-md">{word}</h2>
+        <div className="space-y-6">
+          {groups.map((group, i) => (
+            <div key={i} className="flex justify-center space-x-2">
+              {group.map((letter, j) => (
+                <LetterCard key={j} letter={letter} isDarkMode={isDarkMode} />
+              ))}
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+interface WordButtonProps {
+  word: string;
+  onClick: () => void;
+  isDarkMode: boolean;
+}
+
+function WordButton({ word, onClick, isDarkMode }: WordButtonProps) {
+  return (
+    <motion.button
+      className={`w-full py-3 px-4 text-lg font-semibold rounded-lg border transition-all duration-200 shadow-sm hover:shadow-md ${isDarkMode ? 'bg-[#1e293b] text-white border-[#475569] hover:bg-[#334155]' : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200'}`}
+      onClick={onClick}
+      whileHover={isDarkMode ? { backgroundColor: "#616161" } : { backgroundColor: "#e2e2e2" }} // Efecto de escalado y cambio de color
+      whileTap={{ scale: 0.95, backgroundColor: "#d0d0d0" }} // Efecto de "presionar" con cambio de color
+      transition={{ type: 'spring', stiffness: 200 }}
+    >
+      {word}
+    </motion.button>
+  );
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedWord, setSelectedWord] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+
+  const openModal = (word: string) => {
+    setSelectedWord(word);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedWord("");
+  };
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+      },
+    },
+  };
+  
+  const categoryVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1 },
+  };
+  
+  interface Categories {
+    [key: string]: string[]; // Definimos el tipo de categories
+  }
+  
+  const categories: Categories = categoriesData;
+
+  return (
+    <div className={getThemeClasses(isDarkMode)}>
+      <header className={`py-6 px-8 shadow-md ${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'} flex justify-between items-center`}>
+        <h1 className="text-5xl font-extrabold bg-gradient-to-br from-yellow-300  to-yellow-500 text-transparent bg-clip-text drop-shadow-lg tracking-wide italic">
+          🐝 Spelling Bee 2025
+        </h1>
+        <button 
+          onClick={toggleTheme}
+          className="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+          aria-label="Toggle theme"
+        >
+          {isDarkMode ? '🌙' : '🌞'}
+        </button>
+      </header>
+      <main className="p-6">
+        <motion.div 
+          variants={containerVariants} 
+          initial="hidden" 
+          animate="show" 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10"
+        >
+          {Object.keys(categories).map((categoryKey, index) => (
+            <div 
+              key={categoryKey}
+              className={`rounded-2xl p-6 border ${getThemeClasses(isDarkMode)} shadow-md hover:shadow-lg transition`}
+              variants={categoryVariants}
+              initial="hidden"
+              animate="show"
+              custom={index}
+            >
+              <h2 className="text-2xl font-semibold mb-4 text-center text-yellow-500">
+                {categoryKey.replace(/^\w/, c => c.toUpperCase())}
+              </h2>
+              <div className="space-y-4">
+                {categories[categoryKey].map((word, index) => (
+                  <WordButton key={index} word={word} onClick={() => openModal(word)} isDarkMode={isDarkMode} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </motion.div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {modalOpen && <Modal isOpen={modalOpen} onClose={closeModal} word={selectedWord} isDarkMode={isDarkMode} />}
     </div>
   );
 }
