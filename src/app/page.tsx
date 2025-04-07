@@ -48,7 +48,7 @@ function LetterCard({ letter, isDarkMode }: LetterCardProps) {
   const pronunciation = letterPronunciation[letter.toLowerCase()] || letter;
   return (
     <button
-      onClick={() => speak(letter)}
+      onClick={() => speak(pronunciation)}
       className={`flex flex-col items-center border border-yellow-400 ${isDarkMode ? "bg-gray-800 text-yellow-100" : "bg-gray-100 text-yellow-400"}  rounded-lg p-3 m-1 transition-transform hover:scale-110 shadow-md hover:bg-gray-700`}
     >
       <span className="text-xl font-bold">{letter}</span>
