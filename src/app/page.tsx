@@ -193,7 +193,7 @@ export default function Home() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10"
         >
           {Object.keys(categories).map((categoryKey, index) => (
-            <div 
+            <motion.div 
               key={categoryKey}
               className={`rounded-2xl p-6 border ${getThemeClasses(isDarkMode)} shadow-md hover:shadow-lg transition`}
               variants={categoryVariants}
@@ -209,7 +209,7 @@ export default function Home() {
                   <WordButton key={index} word={word} onClick={() => openModal(word)} isDarkMode={isDarkMode} />
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
       </main>
