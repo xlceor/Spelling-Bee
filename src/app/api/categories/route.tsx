@@ -21,6 +21,7 @@ export async function GET() {
             words
         }));
 
+        return NextResponse.json(transformed); // Respuesta exitosa
     } catch (error) {
         if (error instanceof Error) {
             console.error('Error al leer el archivo:', error);
