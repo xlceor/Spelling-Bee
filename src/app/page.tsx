@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion"; // Importamos framer-motion
-import Header from "@/app/components/header";
 import WordButton from "@/app/components/wordButton";
 import Modal from "@/app/components/modal";
 
