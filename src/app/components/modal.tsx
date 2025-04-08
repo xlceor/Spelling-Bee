@@ -22,20 +22,25 @@ export default function Modal({ isOpen, onClose, word, isDarkMode, category }: M
 
   // Función para reproducir la secuencia de la palabra
   const playWordSequence = () => {
-    // Primero, reproducir la palabra completa
+    // Paso 1: Reproducir la palabra completa al inicio
     speakWord(word, category);
-
-    // Luego, reproducir el deletreo de cada letra
+  
+    // Paso 2: Esperar 2 segundos antes de empezar a deletrear
+    const initialDelay = 1000;
+  
+    // Paso 3: Reproducir cada letra con 0.5 segundos entre ellas
     letters.forEach((letter, index) => {
       setTimeout(() => {
         speak(letter);
-      }, (index + 1) * 1000); // Dejar un segundo entre cada letra
+      }, initialDelay + index * 600);
     });
-
-    // Finalmente, reproducir la palabra completa de nuevo
+  
+    // Paso 4: Esperar 1 segundo después del deletreo para decir la palabra de nuevo
+    const finalDelay = initialDelay + letters.length * 500 + 1000;
+  
     setTimeout(() => {
       speakWord(word, category);
-    }, (letters.length + 1) * 1000); // Tiempo después de todas las letras
+    }, finalDelay);
   };
 
   return (
