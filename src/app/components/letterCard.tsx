@@ -31,7 +31,7 @@ export default function LetterCard({ letter, isDarkMode }: LetterCardProps) {
   return (
     <button
       onClick={() => speak(letter)}
-      className={`flex flex-col items-center border border-yellow-400 ${isDarkMode ? "bg-gray-800 text-yellow-100" : "bg-gray-100 text-yellow-400"} rounded-lg p-3 m-1 transition-transform hover:scale-110 shadow-md hover:bg-gray-700`}
+      className={`flex flex-col items-center border border-yellow-400 ${isDarkMode ? "bg-gray-800 hover:bg-gray-700 text-yellow-100" : "bg-gray-100 hover:bg-gray-200 text-yellow-400"} rounded-lg p-3 m-1 transition-transform hover:scale-110 shadow-md `}
     >
       <span className="text-xl font-bold">{letter}</span>
       <span className={`text-sm ${!isDarkMode && "text-gray-800"}`}>{pronunciation}</span>
