@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { NextResponse } from 'next/server';
+import categories from "@/app/api/categories/categories.json"
 
 
 export async function GET() {
@@ -20,6 +21,8 @@ export async function GET() {
             name,
             words
         }));
+
+        console.log(categories)
 
         return NextResponse.json(transformed); // Respuesta exitosa
     } catch (error) {
