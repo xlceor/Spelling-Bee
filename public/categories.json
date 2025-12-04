@@ -1,5 +1,5 @@
 {
-    "category1": [
+    "Easy": [
       "pie",
       "buy",
       "duo",
@@ -51,7 +51,7 @@
       "affordable",
       "temperatures"
     ],
-    "category2": [
+    "Mid": [
       "egg",
       "pie",
       "bowl",
@@ -94,7 +94,7 @@
       "opportunity",
       "embarrassing"
     ],
-    "category3": [
+    "Hard": [
       "tight",
       "knife",
       "leash",

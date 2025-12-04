@@ -1,3 +1,5 @@
+
+
 import { motion } from 'framer-motion';
 import LetterCard from './letterCard';
 import { speak } from './letterCard';
@@ -16,12 +18,15 @@ const speakWord = (text: string, category : string) => {
   });
 };
 export default function Modal({ isOpen, onClose, word, isDarkMode, category }: ModalProps) {
+
   if (!isOpen) return null;
 
   const letters = word.split("");
 
   // Función para reproducir la secuencia de la palabra
   const playWordSequence = () => {
+
+    
     // Paso 1: Reproducir la palabra completa al inicio
     speakWord(word, category);
   
@@ -42,6 +47,7 @@ export default function Modal({ isOpen, onClose, word, isDarkMode, category }: M
       speakWord(word, category);
     }, finalDelay);
   };
+
 
   return (
     <motion.div 
